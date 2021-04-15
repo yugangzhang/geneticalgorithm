@@ -179,6 +179,7 @@ class geneticalgorithm():
         else:
             self.var_bound=np.array([[0,1]]*self.dim) 
         self.variable_init  =  variable_init
+        self.last_pop_best = None
         ############################################################# 
         #Timeout
         self.funtimeout=float(function_timeout)
@@ -253,7 +254,8 @@ class geneticalgorithm():
         #Initialize the solo to store paras and fitness, the dimension is [ Num_paras + 1  ] 
         solo=np.zeros(self.dim+1)
         #Initialize the paras, the dimension is [ Num_paras   ] 
-        var=np.zeros(self.dim)      
+        var=np.zeros(self.dim)    
+        
         #Start initialize the paras
         for p in range(0,self.pop_s):
             if self.variable_init is None:
@@ -276,11 +278,14 @@ class geneticalgorithm():
                     #Create the initial var using the boundary                
                     var[i]= self.variable_init[i]   + np.random.random()*(self.var_bound[i][1]-self.var_bound[i][0])   *  0.01
                     solo[i]=var[i].copy()  
-                
+               
             # Evaluation the var using the cost function (self.sim)
             obj=self.sim( var )            
             solo[self.dim]=obj
             pop[p]=solo.copy()
+            #print(p, pop[p] )
+            if p ==0:
+                self.init_pop_first =   pop[p]                
         #############################################################
         #############################################################
         # Report
@@ -314,7 +319,8 @@ class geneticalgorithm():
             # Report
             #self.report.append(pop[0,self.dim])  
             self.report[t-1] = pop[0,self.dim]
-            self.full_report[t-1] = pop[0]
+            self.full_report[t-1] = pop[0]            
+            self.last_pop_best =   pop[0]
             ##############################################################         
             # Normalizing objective function             
             normobj=np.zeros(self.pop_s)            
@@ -511,7 +517,7 @@ class geneticalgorithm():
     def evaluate(self):
         return self.f(self.temp)
 ###############################################################################    
-    def sim(self,X):
+    def sim(self,X ):
         self.temp=X.copy()
         obj=None
         try:
