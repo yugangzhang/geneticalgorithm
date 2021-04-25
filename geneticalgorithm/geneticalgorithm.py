@@ -83,7 +83,9 @@ class geneticalgorithm():
                                        'crossover_type':'uniform',\
                                        'max_iteration_without_improv':None},\
                          convergence_curve=True,\
-                         progress_bar=True,verbose = True):
+                         progress_bar=True,\
+                         logx=True, logy=True,
+                         verbose = True):
         '''
         @param function <Callable> - the given objective function to be minimized
             NOTE: This implementation minimizes the given objective function. 
@@ -129,6 +131,10 @@ class geneticalgorithm():
         @progress_bar <True/False> - Show progress bar or not. Default is True.        
         for more details and examples of implementation please visit:
             https://github.com/rmsolgi/geneticalgorithm  
+            
+            logx=True, for plot the fitness
+            logy=True, for plot the fitness
+            
         '''
         self.__name__=geneticalgorithm
         #############################################################
@@ -139,6 +145,8 @@ class geneticalgorithm():
         #dimension        
         self.dim=int(dimension)     
         self.verbose = verbose
+        self.logx=logx
+        self.logy=logy
         #############################################################
         # input variable type   
         if isinstance( variable_type, str):
@@ -436,12 +444,17 @@ class geneticalgorithm():
     def plot_report( self, report=None):   
         if report is None:
             report = np.array(self.report)
-        plt.figure()    
-        plt.plot(report,'--go')
-        plt.xlabel('Iteration')
-        plt.ylabel('Objective function')
-        plt.title('Genetic Algorithm')
-        plt.show()         
+        fig = plt.figure()   
+        ax = fig.add_subplot(1, 1, 1)
+        ax.plot(report,'--go')        
+        if self.logx:
+            ax.set_xscale('log')
+        if self.logy:
+            ax.set_yscale('log')        
+        ax.set_xlabel('Iteration')
+        ax.set_ylabel('Objective function')
+        ax.set_title('Genetic Algorithm')
+        #plt.show()         
         
     def cross(self,x,y,c_type): 
         '''switch some data between x and y in a way defined by c_type
